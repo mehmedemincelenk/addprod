@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Hızlı Ürün Yükle - Faz 1 (Analiz)</title>
+    <title>Hızlı Ürün Yükle - Faz 2 (Lojistik)</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -68,7 +68,7 @@
         </button>
 
         <div class="glass px-4 py-1.5 rounded-full">
-            <span class="text-xs font-semibold text-white/90 tracking-wide uppercase">Faz 1: Analiz Modu</span>
+            <span class="text-xs font-semibold text-white/90 tracking-wide uppercase">Faz 2: Lojistik Modu</span>
         </div>
 
         <button onclick="switchCamera()" class="pointer-events-auto w-10 h-10 rounded-full glass flex items-center justify-center text-white/80">
@@ -139,8 +139,7 @@
                 <div class="w-12 h-12 bg-green-500/20 text-green-400 rounded-full flex items-center justify-center mx-auto mb-3"><i class="ph ph-check text-2xl font-bold"></i></div>
                 <h3 class="text-lg font-bold text-white">Analiz Tamamlandı</h3>
             </div>
-            <div class="flex-1 overflow-y-auto space-y-3 mb-6 pr-1 custom-scrollbar" id="result-fields">
-                <!-- Veriler buraya dolacak -->
+            <div class="flex-1 overflow-y-auto space-y-3 mb-6 pr-1 custom-scrollbar" id="result-fields-container">
                 <div class="bg-black/40 p-3 rounded-xl border border-white/5"><p class="text-[10px] text-zinc-500 uppercase font-bold mb-1">Başlık</p><p id="res-baslik" class="text-sm font-bold text-white leading-tight">-</p></div>
                 <div class="grid grid-cols-2 gap-3">
                     <div class="bg-black/40 p-3 rounded-xl border border-white/5"><p class="text-[10px] text-zinc-500 uppercase font-bold mb-1">Marka</p><p id="res-marka" class="text-sm text-zinc-200 truncate">-</p></div>
@@ -152,7 +151,7 @@
                 </div>
                 <div class="bg-green-500/10 p-3 rounded-xl border border-green-500/20"><p class="text-[10px] text-green-500 uppercase font-bold mb-1">Fiyat</p><p id="res-fiyat" class="text-lg font-bold text-green-400">-</p></div>
             </div>
-            <div class="space-y-3 shrink-0">
+            <div class="space-y-3 shrink-0 pt-4">
                 <button onclick="sendDataToWebhook()" id="final-send-btn" class="w-full bg-white text-black py-4 rounded-xl font-bold text-base shadow-lg hover:bg-zinc-200 active:scale-95 transition-all flex items-center justify-center gap-2"><span>Onayla ve Kaydet</span><i class="ph ph-paper-plane-tilt font-bold"></i></button>
                 <button onclick="resetApp()" class="w-full bg-transparent text-zinc-400 py-3 rounded-xl font-medium text-sm hover:text-white transition-colors">İptal</button>
             </div>
@@ -163,7 +162,13 @@
 
     <script>
         // --- WEBHOOK YAPILANDIRMASI ---
-        const WEBHOOK_URL = "https://hook.eu1.make.com/uav81dlsk6p0ibimh6t3jmg5o4xcowhi";
+        const ANALIZ_WEBHOOK_URL = "https://hook.eu1.make.com/yi311van8k36hcpvtp3tro73icby58qo";
+        
+        // =========================================================
+        // 🚀 FAZ 2: KARGO TRANSFER PROTOKOLÜ
+        // =========================================================
+        // ⚠️ DİKKAT: Yeni oluşturduğun "Faz 2" Webhook URL'ini buraya yapıştır!
+        const KAYIT_WEBHOOK_URL = "https://hook.eu1.make.com/6sb60xary7l6xxitq567ertlzfamwumd"; 
 
         let photos = []; 
         let stream = null; 
@@ -236,7 +241,6 @@
             }
         }
 
-        // --- FAZ 1: ANALİZ FONKSİYONU ---
         async function processAudioChain(audioBlob) {
             if (audioBlob.size === 0) return;
 
@@ -247,19 +251,16 @@
             formData.append("file", audioBlob, "recording.webm");
 
             try {
-                // Make.com Analiz Senaryosuna (Senaryo A) sesi gönderiyoruz
-                const response = await fetch(WEBHOOK_URL, { 
+                const response = await fetch(ANALIZ_WEBHOOK_URL, { 
                     method: "POST", 
                     body: formData 
                 });
                 
                 if (!response.ok) throw new Error("Webhook yanıt vermedi.");
                 
-                // Senaryodan GPT çıktısı olan JSON bekleniyor
                 const data = await response.json();
                 currentProductData = data; 
 
-                // UI Verilerini Doldur
                 document.getElementById('res-baslik').innerText = data.urun_basligi || "-";
                 document.getElementById('res-marka').innerText = data.marka || "-";
                 document.getElementById('res-kategori').innerText = data.kategori || "-";
@@ -276,31 +277,57 @@
         }
 
         async function sendDataToWebhook() {
-            if (!currentProductData) return;
-            const btn = document.getElementById('final-send-btn');
-            btn.disabled = true;
-            btn.innerHTML = `<i class="ph ph-spinner animate-spin"></i> Kaydediliyor...`;
+            // 1. Kalkan Kontrolü: Faz 1'den veri gelmiş mi?
+            if (!currentProductData) {
+                alert("Önce analiz yapmalısın kaptan! (Veri yok)"); 
+                return;
+            }
 
+            const btn = document.getElementById('final-send-btn');
+            const originalText = btn.innerHTML;
+            
+            // UI: Motorları Ateşle
+            btn.disabled = true;
+            btn.innerHTML = `<i class="ph ph-rocket-launch animate-bounce text-xl"></i> Lojistik Üssüne Gönderiliyor...`;
+
+            // 📦 PAKETLEME ANI (Kritik Nokta)
+            // Faz 1 verisi ile fotoğrafı birleştiriyoruz
             const payload = {
-                ...currentProductData,
-                gorsel: photos[0] ? photos[0].processed : null,
-                action: "SAVE_PRODUCT"
+                ...currentProductData, // <-- İŞTE BURASI! Faz 1'den gelen (Marka, Fiyat, Renk) burada pakete ekleniyor.
+                gorsel_data: photos[0] ? photos[0].processed : null, // Bu da çektiğin fotoğraf (Base64)
+                islem_tarihi: new Date().toISOString()
             };
 
             try {
-                // Veriyi kaydetmek için tekrar aynı veya farklı bir webhook çağrılabilir
-                await fetch(WEBHOOK_URL, {
+                // 📡 Sinyal Gönderimi (Make.com Faz 2 Webhook'una)
+                const response = await fetch(KAYIT_WEBHOOK_URL, {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify(payload)
                 });
-                
-                alert("Başarıyla kaydedildi!");
-                resetApp();
+
+                if (!response.ok) throw new Error("Bağlantı koptu! Status: " + response.status);
+
+                // 🎉 Zafer Ekranı
+                const modalContent = document.getElementById('success-modal').querySelector('div');
+                modalContent.innerHTML = `
+                    <div class="text-center p-8 flex flex-col items-center">
+                        <div class="w-20 h-20 bg-green-500/20 rounded-full flex items-center justify-center mb-4">
+                            <i class="ph ph-paper-plane-tilt text-4xl text-green-500"></i>
+                        </div>
+                        <h3 class="text-2xl font-bold text-white mb-2">Başarıyla Gönderildi!</h3>
+                        <p class="text-zinc-400 text-sm">Ürün lojistik merkezine (Make.com) ulaştı.</p>
+                        <button onclick="location.reload()" class="mt-8 px-8 py-3 bg-white text-black rounded-xl font-bold hover:bg-zinc-200 transition-colors">
+                            Yeni Ürün Ekle
+                        </button>
+                    </div>
+                `;
+
             } catch (e) {
-                alert("Kayıt hatası!");
+                console.error(e);
+                alert("KRİTİK HATA: " + e.message);
+                btn.innerHTML = originalText;
                 btn.disabled = false;
-                btn.innerHTML = "Onayla ve Kaydet";
             }
         }
 
