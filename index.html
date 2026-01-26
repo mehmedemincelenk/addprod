@@ -167,7 +167,6 @@
         // =========================================================
         // 🚀 FAZ 2: KARGO TRANSFER PROTOKOLÜ
         // =========================================================
-        // ⚠️ DİKKAT: Yeni oluşturduğun "Faz 2" Webhook URL'ini buraya yapıştır!
         const KAYIT_WEBHOOK_URL = "https://hook.eu1.make.com/6sb60xary7l6xxitq567ertlzfamwumd"; 
 
         let photos = []; 
@@ -244,6 +243,9 @@
         async function processAudioChain(audioBlob) {
             if (audioBlob.size === 0) return;
 
+            // 🧹 HAFIZA TEMİZLİĞİ: Yeni işlem başlamadan önce eski veriyi çöpe atıyoruz
+            currentProductData = null; 
+
             const overlay = document.getElementById('loading-overlay');
             overlay.classList.remove('hidden');
 
@@ -277,7 +279,6 @@
         }
 
         async function sendDataToWebhook() {
-            // 1. Kalkan Kontrolü: Faz 1'den veri gelmiş mi?
             if (!currentProductData) {
                 alert("Önce analiz yapmalısın kaptan! (Veri yok)"); 
                 return;
@@ -286,20 +287,16 @@
             const btn = document.getElementById('final-send-btn');
             const originalText = btn.innerHTML;
             
-            // UI: Motorları Ateşle
             btn.disabled = true;
             btn.innerHTML = `<i class="ph ph-rocket-launch animate-bounce text-xl"></i> Lojistik Üssüne Gönderiliyor...`;
 
-            // 📦 PAKETLEME ANI (Kritik Nokta)
-            // Faz 1 verisi ile fotoğrafı birleştiriyoruz
             const payload = {
-                ...currentProductData, // <-- İŞTE BURASI! Faz 1'den gelen (Marka, Fiyat, Renk) burada pakete ekleniyor.
-                gorsel_data: photos[0] ? photos[0].processed : null, // Bu da çektiğin fotoğraf (Base64)
+                ...currentProductData, 
+                gorsel_data: photos[0] ? photos[0].processed : null, 
                 islem_tarihi: new Date().toISOString()
             };
 
             try {
-                // 📡 Sinyal Gönderimi (Make.com Faz 2 Webhook'una)
                 const response = await fetch(KAYIT_WEBHOOK_URL, {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
@@ -308,7 +305,6 @@
 
                 if (!response.ok) throw new Error("Bağlantı koptu! Status: " + response.status);
 
-                // 🎉 Zafer Ekranı
                 const modalContent = document.getElementById('success-modal').querySelector('div');
                 modalContent.innerHTML = `
                     <div class="text-center p-8 flex flex-col items-center">
