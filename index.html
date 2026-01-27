@@ -63,7 +63,7 @@
 
     <!-- ÜST PANEL -->
     <header class="absolute top-0 left-0 right-0 z-30 safe-pt p-4 flex justify-between items-center pointer-events-none">
-        <button onclick="alert('Önce fotoğraf çekin, sonra kırmızı butona basıp ürünü anlatın.')" class="pointer-events-auto w-10 h-10 rounded-full glass flex items-center justify-center text-white/80">
+        <button onclick="showError('Önce fotoğraf çekin, sonra kırmızı butona basıp ürünü anlatın.')" class="pointer-events-auto w-10 h-10 rounded-full glass flex items-center justify-center text-white/80">
             <i class="ph ph-question text-xl"></i>
         </button>
 
@@ -158,15 +158,17 @@
         </div>
     </div>
 
+    <!-- ERROR TOAST -->
+    <div id="error-toast" class="fixed top-6 left-1/2 -translate-x-1/2 bg-red-600 text-white px-5 py-2.5 rounded-full shadow-2xl z-[80] hidden transition-all transform -translate-y-full opacity-0 flex items-center gap-2 border border-red-400 max-w-[90%]">
+        <i class="ph ph-warning-circle text-lg shrink-0"></i>
+        <span id="error-message" class="text-xs font-bold truncate">Hata oluştu</span>
+    </div>
+
     <canvas id="capture-canvas" class="hidden"></canvas>
 
     <script>
         // --- WEBHOOK YAPILANDIRMASI ---
         const ANALIZ_WEBHOOK_URL = "https://hook.eu1.make.com/yi311van8k36hcpvtp3tro73icby58qo";
-        
-        // =========================================================
-        // 🚀 FAZ 2: KARGO TRANSFER PROTOKOLÜ
-        // =========================================================
         const KAYIT_WEBHOOK_URL = "https://hook.eu1.make.com/6sb60xary7l6xxitq567ertlzfamwumd"; 
 
         let photos = []; 
@@ -213,7 +215,7 @@
         }
 
         function toggleRecording() {
-            if(!micPermissionGranted) { alert("Mikrofon izni gerek."); return; }
+            if(!micPermissionGranted) { showError("Mikrofon izni gerek."); return; }
             if (isRecording) {
                 mediaRecorder.stop();
                 isRecording = false;
@@ -243,7 +245,7 @@
         async function processAudioChain(audioBlob) {
             if (audioBlob.size === 0) return;
 
-            // 🧹 HAFIZA TEMİZLİĞİ: Yeni işlem başlamadan önce eski veriyi çöpe atıyoruz
+            // 🧹 Her işlemde tertemiz bir başlangıç yapıyoruz
             currentProductData = null; 
 
             const overlay = document.getElementById('loading-overlay');
@@ -255,10 +257,21 @@
             try {
                 const response = await fetch(ANALIZ_WEBHOOK_URL, { 
                     method: "POST", 
-                    body: formData 
+                    body: formData,
+                    cache: "no-cache" // 🚀 Önbellekten okumasını engelle
                 });
                 
-                if (!response.ok) throw new Error("Webhook yanıt vermedi.");
+                // Webhook yanıtı başarılı mı? (200-299 arası)
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    throw new Error(`Make.com Hatası (${response.status}): ${errorText.substring(0, 100)}`);
+                }
+                
+                // 🔍 Gelen veri JSON mu kontrol et (Pattern hatasını çözen kısım)
+                const contentType = response.headers.get("content-type");
+                if (!contentType || !contentType.includes("application/json")) {
+                    throw new Error("Make.com'dan beklenen JSON yanıtı gelmedi (HTML veya Boş döndü).");
+                }
                 
                 const data = await response.json();
                 currentProductData = data; 
@@ -274,13 +287,14 @@
                 document.getElementById('success-modal').classList.remove('hidden');
             } catch (e) {
                 overlay.classList.add('hidden');
-                alert("Analiz Hatası: " + e.message);
+                console.error("Detaylı Hata:", e);
+                showError("Sistem Meşgul veya Hatalı: " + e.message + " (Make.com senaryonun 'ON' olduğundan emin ol)");
             }
         }
 
         async function sendDataToWebhook() {
             if (!currentProductData) {
-                alert("Önce analiz yapmalısın kaptan! (Veri yok)"); 
+                showError("Önce analiz yapmalısın kaptan! (Veri yok)"); 
                 return;
             }
 
@@ -321,7 +335,7 @@
 
             } catch (e) {
                 console.error(e);
-                alert("KRİTİK HATA: " + e.message);
+                showError("KRİTİK HATA: " + e.message);
                 btn.innerHTML = originalText;
                 btn.disabled = false;
             }
@@ -365,6 +379,19 @@
         function switchCamera() {
             facingMode = facingMode === "environment" ? "user" : "environment";
             startCamera();
+        }
+
+        function showError(msg) {
+            const toast = document.getElementById('error-toast');
+            const messageEl = document.getElementById('error-message');
+            if (toast && messageEl) {
+                messageEl.innerText = msg;
+                toast.classList.remove('hidden', '-translate-y-full', 'opacity-0');
+                setTimeout(() => {
+                    toast.classList.add('-translate-y-full', 'opacity-0');
+                    setTimeout(() => toast.classList.add('hidden'), 300);
+                }, 5000);
+            }
         }
     </script>
 </body>
