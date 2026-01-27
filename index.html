@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Lojistik V4 - Turbo</title>
+    <title>Lojistik V5 - Rehberli Turbo</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -11,112 +11,170 @@
         body { font-family: 'Inter', sans-serif; background-color: #09090b; color: white; -webkit-tap-highlight-color: transparent; overflow: hidden; touch-action: none; }
         .safe-pb { padding-bottom: env(safe-area-inset-bottom); }
         .safe-pt { padding-top: env(safe-area-inset-top); }
+        .glass { background: rgba(24, 24, 27, 0.6); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.05); }
         .recording-pulse { animation: pulse-red 2s infinite cubic-bezier(0.4, 0, 0.6, 1); }
         @keyframes pulse-red { 0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); } 70% { box-shadow: 0 0 0 20px rgba(239, 68, 68, 0); } 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); } }
-        .glass { background: rgba(24, 24, 27, 0.6); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.05); }
         .custom-scrollbar::-webkit-scrollbar { width: 3px; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background: #3f3f46; border-radius: 10px; }
     </style>
 </head>
 <body class="flex flex-col h-[100dvh] w-full relative">
 
-    <div id="start-overlay" class="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-[#09090b] p-8 text-center">
-        <div class="w-20 h-20 bg-blue-500/10 rounded-3xl flex items-center justify-center mb-6 border border-blue-500/20">
-            <i class="ph ph-lightning text-4xl text-blue-400"></i>
+    <div id="start-overlay" class="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-[#09090b] p-6 text-center overflow-y-auto">
+        <div class="w-16 h-16 bg-blue-500/10 rounded-2xl flex items-center justify-center mb-4 border border-blue-500/20">
+            <i class="ph ph-microphone-stage text-3xl text-blue-400"></i>
         </div>
-        <h3 class="text-2xl font-bold mb-2">Turbo Modu Aktif</h3>
-        <p class="text-zinc-500 mb-8 text-sm max-w-[240px]">Kesintisiz ürün yükleme için sistem hazırlandı.</p>
-        <button onclick="App.init()" class="w-full max-w-[180px] py-4 bg-white text-black rounded-2xl font-bold shadow-xl">Başla</button>
+        <h3 class="text-2xl font-bold mb-2">Nasıl Anlatmalıyım?</h3>
+        <p class="text-zinc-500 mb-6 text-xs max-w-[280px]">AI'nın profesyonel bir açıklama yazması için şu sırayı takip etmeniz önerilir:</p>
+        
+        <div class="grid grid-cols-1 gap-3 w-full max-w-[320px] mb-8 text-left">
+            <div class="bg-white/5 p-3 rounded-xl border border-white/10 flex items-start gap-3">
+                <span class="w-5 h-5 bg-blue-500 rounded-full flex items-center justify-center text-[10px] font-bold shrink-0 mt-0.5">1</span>
+                <p class="text-[11px] text-zinc-300"><b>Temel Bilgi:</b> "Mavi pamuklu oversize sweatshirt, L beden."</p>
+            </div>
+            <div class="bg-white/5 p-3 rounded-xl border border-white/10 flex items-start gap-3">
+                <span class="w-5 h-5 bg-blue-500 rounded-full flex items-center justify-center text-[10px] font-bold shrink-0 mt-0.5">2</span>
+                <p class="text-[11px] text-zinc-300"><b>Ticari Detay:</b> "Fiyat 450 TL, stokta 100 adet var."</p>
+            </div>
+            <div class="bg-white/5 p-3 rounded-xl border border-white/10 flex items-start gap-3">
+                <span class="w-5 h-5 bg-blue-500 rounded-full flex items-center justify-center text-[10px] font-bold shrink-0 mt-0.5">3</span>
+                <p class="text-[11px] text-zinc-300"><b>Teknik Detay:</b> "Şardonlu kalın doku, düşük omuz kesim."</p>
+            </div>
+        </div>
+
+        <button onclick="App.init()" class="w-full max-w-[200px] py-4 bg-white text-black rounded-2xl font-bold active:scale-95 shadow-xl transition-all">Anladım, Başla</button>
     </div>
 
     <header class="absolute top-0 left-0 right-0 z-30 safe-pt p-4 flex justify-between items-center pointer-events-none">
         <div class="glass px-4 py-1.5 rounded-full pointer-events-auto">
-            <span class="text-[10px] font-bold text-blue-400 uppercase tracking-widest">Turbo Lojistik Hattı</span>
+            <span class="text-[9px] font-bold text-blue-400 uppercase tracking-widest">V5: Moda Editörü Modu</span>
         </div>
-        <button onclick="App.switchCamera()" class="pointer-events-auto w-10 h-10 rounded-full glass flex items-center justify-center">
-            <i class="ph ph-arrows-clockwise text-xl"></i>
-        </button>
+        <div class="flex gap-2 pointer-events-auto">
+            <button onclick="App.toggleWordPool()" class="w-10 h-10 rounded-full glass flex items-center justify-center"><i class="ph ph-list-magnifying text-xl"></i></button>
+            <button onclick="App.switchCamera()" class="w-10 h-10 rounded-full glass flex items-center justify-center"><i class="ph ph-arrows-clockwise text-xl"></i></button>
+        </div>
     </header>
 
     <div class="flex-1 relative flex flex-col justify-center items-center overflow-hidden bg-black">
         <video id="camera-feed" autoplay playsinline muted class="w-full h-full object-cover opacity-80"></video>
+        
+        <div class="absolute top-20 left-4 right-4 pointer-events-none">
+            <div class="bg-black/40 backdrop-blur-md p-2 rounded-lg border border-white/10 inline-block">
+                <p class="text-[10px] text-zinc-400 font-medium flex items-center gap-2">
+                    <i class="ph ph-info text-blue-400"></i> İpucu: Kumaş türünü belirtmeyi unutmayın.
+                </p>
+            </div>
+        </div>
+
         <div class="absolute bottom-6 left-6 right-6 flex justify-between items-center">
             <div id="gallery-wrapper" class="hidden glass p-1 rounded-xl">
                 <div id="gallery-strip" class="w-12 h-16 rounded-lg overflow-hidden border border-white/20"></div>
             </div>
-            <button onclick="App.takePhoto()" class="w-16 h-16 rounded-full border-4 border-white/30 bg-white/10 flex items-center justify-center active:scale-90 transition-all">
+            <button onclick="App.takePhoto()" class="w-16 h-16 rounded-full border-4 border-white/30 bg-white/10 flex items-center justify-center active:scale-90 transition-all shadow-2xl">
                 <div class="w-12 h-12 bg-white rounded-full"></div>
             </button>
         </div>
     </div>
 
-    <div class="bg-zinc-950 pt-4 px-6 pb-8 safe-pb border-t border-white/5">
+    <div class="bg-zinc-950 pt-4 px-6 pb-8 safe-pb border-t border-white/5 relative">
         <div class="flex items-center gap-4">
-            <button id="record-btn" onclick="App.toggleRecording()" class="shrink-0 w-16 h-16 bg-red-600 rounded-2xl flex items-center justify-center active:scale-90 transition-all">
+            <button id="record-btn" onclick="App.toggleRecording()" class="shrink-0 w-16 h-16 bg-red-600 rounded-2xl flex items-center justify-center active:scale-90 transition-all shadow-lg">
                 <i id="mic-icon" class="ph ph-microphone text-2xl"></i>
             </button>
             <div class="flex-1">
                 <div class="flex items-center gap-2 mb-1">
-                    <span id="recorder-prompt" class="text-[9px] font-black text-zinc-500 uppercase">Sıradaki Ürün</span>
+                    <span id="recorder-prompt" class="text-[9px] font-black text-zinc-500 uppercase tracking-tight">Sistemi Dinle</span>
                     <div id="recording-indicator" class="hidden w-2 h-2 rounded-full bg-red-500 animate-pulse"></div>
                 </div>
-                <p id="live-transcript" class="text-xs text-zinc-400 italic line-clamp-2 leading-relaxed">Ürünü anlatmaya başlayın...</p>
+                <p id="live-transcript" class="text-xs text-zinc-400 italic line-clamp-2">"Müslin kumaş, hakim yaka gömlek..."</p>
+            </div>
+        </div>
+    </div>
+
+    <div id="word-pool" class="fixed inset-x-0 bottom-0 z-40 translate-y-full transition-transform duration-300 glass border-t border-white/10 rounded-t-[2rem] max-h-[70vh] flex flex-col">
+        <div class="p-6 overflow-y-auto custom-scrollbar">
+            <div class="flex justify-between items-center mb-6">
+                <h4 class="font-bold">Kelime Sözlüğü</h4>
+                <button onclick="App.toggleWordPool()" class="text-zinc-500"><i class="ph ph-x text-xl"></i></button>
+            </div>
+            <div class="space-y-6">
+                <div>
+                    <p class="text-[10px] text-blue-400 font-bold uppercase mb-3">Kumaş Türleri</p>
+                    <div class="flex flex-wrap gap-2 text-[10px] text-zinc-400">
+                        <span class="bg-white/5 px-2 py-1 rounded-md">Şardonlu</span> <span class="bg-white/5 px-2 py-1 rounded-md">Viskon</span>
+                        <span class="bg-white/5 px-2 py-1 rounded-md">Gabardin</span> <span class="bg-white/5 px-2 py-1 rounded-md">Müslin</span>
+                        <span class="bg-white/5 px-2 py-1 rounded-md">İnterlok</span> <span class="bg-white/5 px-2 py-1 rounded-md">Kaşmir</span>
+                    </div>
+                </div>
+                <div>
+                    <p class="text-[10px] text-blue-400 font-bold uppercase mb-3">Kalıp & Kesim</p>
+                    <div class="flex flex-wrap gap-2 text-[10px] text-zinc-400">
+                        <span class="bg-white/5 px-2 py-1 rounded-md">Oversize</span> <span class="bg-white/5 px-2 py-1 rounded-md">Slouchy</span>
+                        <span class="bg-white/5 px-2 py-1 rounded-md">Baggy Fit</span> <span class="bg-white/5 px-2 py-1 rounded-md">Relaxed</span>
+                        <span class="bg-white/5 px-2 py-1 rounded-md">Hakim Yaka</span> <span class="bg-white/5 px-2 py-1 rounded-md">Kruvaze</span>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 
     <div id="success-modal" class="fixed inset-0 z-50 hidden flex items-end sm:items-center justify-center p-4 bg-black/90 backdrop-blur-md">
-        <div class="bg-zinc-900 border border-white/10 w-full max-w-sm rounded-[2.5rem] p-6 shadow-2xl flex flex-col max-h-[80vh]">
+        <div class="bg-zinc-900 border border-white/10 w-full max-w-sm rounded-[2.5rem] p-6 shadow-2xl flex flex-col max-h-[85vh]">
             <div class="flex items-center gap-3 mb-4">
                 <div id="res-kategori-tag" class="px-3 py-1 bg-blue-500/10 border border-blue-500/20 rounded-full text-[10px] font-bold text-blue-400 uppercase">-</div>
                 <div class="flex-1 h-px bg-white/5"></div>
             </div>
-            <h3 id="res-baslik" class="text-xl font-bold text-white mb-4 leading-snug">-</h3>
+
+            <h3 id="res-baslik" class="text-xl font-bold text-white mb-5 leading-snug">-</h3>
+            
             <div class="flex-1 overflow-y-auto space-y-4 custom-scrollbar mb-6 pr-1">
                 <div class="grid grid-cols-3 gap-2">
-                    <div class="bg-white/5 p-2 rounded-xl text-center">
+                    <div class="bg-white/5 p-2 rounded-xl text-center border border-white/5">
                         <p class="text-[8px] text-zinc-500 uppercase font-bold mb-1">Renk</p>
                         <p id="res-renk" class="text-[11px] font-medium">-</p>
                     </div>
-                    <div class="bg-white/5 p-2 rounded-xl text-center">
+                    <div class="bg-white/5 p-2 rounded-xl text-center border border-white/5">
                         <p class="text-[8px] text-zinc-500 uppercase font-bold mb-1">Beden</p>
                         <p id="res-beden" class="text-[11px] font-medium">-</p>
                     </div>
-                    <div class="bg-white/5 p-2 rounded-xl text-center">
+                    <div class="bg-white/5 p-2 rounded-xl text-center border border-white/5">
                         <p class="text-[8px] text-zinc-500 uppercase font-bold mb-1">Kalıp</p>
                         <p id="res-kalip" class="text-[11px] font-medium">-</p>
                     </div>
                 </div>
-                <div class="bg-black/30 p-4 rounded-2xl border border-white/5">
-                    <p class="text-[9px] text-zinc-500 uppercase font-bold mb-2 tracking-widest">AI Satış Açıklaması</p>
-                    <p id="res-aciklama" class="text-xs text-zinc-300 leading-relaxed italic"></p>
+
+                <div class="bg-blue-500/5 p-4 rounded-2xl border border-blue-500/10">
+                    <div class="flex items-center gap-2 mb-2">
+                        <i class="ph ph-scroll text-blue-400 text-xs"></i>
+                        <p class="text-[9px] text-zinc-500 uppercase font-bold tracking-widest">Profesyonel Editör Özeti</p>
+                    </div>
+                    <p id="res-aciklama" class="text-[12px] text-zinc-300 leading-relaxed italic"></p>
                 </div>
+
                 <div class="flex justify-between items-center bg-green-500/5 p-3 rounded-xl border border-green-500/10">
-                    <span class="text-[10px] font-bold text-green-500 uppercase">Satış Fiyatı</span>
+                    <span class="text-[10px] font-bold text-green-500 uppercase">Tahmini Satış</span>
                     <span id="res-fiyat" class="text-lg font-black text-green-400">-</span>
                 </div>
             </div>
+
             <div class="grid grid-cols-2 gap-3 shrink-0">
-                <button onclick="App.resetUI()" class="py-4 rounded-2xl bg-zinc-800 text-zinc-400 font-bold text-sm">İptal</button>
-                <button onclick="App.sendData()" id="final-send-btn" class="py-4 rounded-2xl bg-white text-black font-bold text-sm shadow-lg active:scale-95 transition-all">Onayla</button>
+                <button onclick="App.resetUI()" class="py-4 rounded-2xl bg-zinc-800 text-zinc-400 font-bold text-xs uppercase tracking-widest">İptal</button>
+                <button onclick="App.sendData()" id="final-send-btn" class="py-4 rounded-2xl bg-white text-black font-bold text-xs uppercase tracking-widest active:scale-95 shadow-lg">Onayla ve Kaydet</button>
             </div>
         </div>
     </div>
 
     <div id="loading-overlay" class="fixed inset-0 bg-black/95 z-[60] hidden flex flex-col items-center justify-center text-center p-10">
         <div class="w-12 h-12 border-2 border-blue-500 border-t-transparent rounded-full animate-spin mb-4"></div>
-        <p class="text-sm font-bold tracking-widest text-zinc-400 animate-pulse">ANALİZ EDİLİYOR...</p>
+        <p class="text-[10px] font-bold tracking-[0.2em] text-zinc-400 animate-pulse uppercase">Moda Editörü Analiz Ediyor</p>
     </div>
-
     <div id="success-toast" class="fixed top-6 inset-x-6 bg-green-600 text-white p-4 rounded-2xl z-[80] hidden flex items-center gap-3 shadow-2xl">
         <i class="ph ph-check-circle text-xl"></i>
-        <span class="text-xs font-bold">Ürün Başarıyla Kuyruğa Eklendi! ✅</span>
+        <span class="text-xs font-bold uppercase tracking-tight">Ürün Lojistik Kuyruğuna Eklendi! ✅</span>
     </div>
-
     <canvas id="capture-canvas" class="hidden"></canvas>
 
     <script>
-        // SOLID Design - Namespace Pattern
         const App = {
             config: {
                 ANALIZ_URL: "https://hook.eu1.make.com/yi311van8k36hcpvtp3tro73icby58qo",
@@ -125,24 +183,19 @@
             state: {
                 photos: [], stream: null, facingMode: "environment", 
                 mediaRecorder: null, audioChunks: [], isRecording: false, 
-                currentProductData: null
+                currentProductData: null, wordPoolOpen: false
             },
 
-            init() {
-                document.getElementById('start-overlay').classList.add('hidden');
-                this.startCamera();
-            },
+            init() { document.getElementById('start-overlay').classList.add('hidden'); this.startCamera(); },
 
             async startCamera() {
                 try {
                     if (this.state.stream) this.state.stream.getTracks().forEach(t => t.stop());
-                    this.state.stream = await navigator.mediaDevices.getUserMedia({ 
-                        video: { facingMode: this.state.facingMode, width: 1080 } 
-                    });
+                    this.state.stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: this.state.facingMode, width: 1080 } });
                     document.getElementById('camera-feed').srcObject = this.state.stream;
                     const aStream = await navigator.mediaDevices.getUserMedia({ audio: true });
                     this.setupRecorder(aStream);
-                } catch (e) { this.showError("Kamera/Mikrofon izni gerek."); }
+                } catch (e) { alert("Kamera/Mikrofon izni gerek."); }
             },
 
             setupRecorder(s) {
@@ -180,7 +233,7 @@
                     this.updateResultUI(this.state.currentProductData);
                     this.toggleLoading(false);
                     document.getElementById('success-modal').classList.remove('hidden');
-                } catch (e) { this.toggleLoading(false); this.showError("Analiz hatası."); }
+                } catch (e) { this.toggleLoading(false); alert("Analiz hatası."); }
             },
 
             updateResultUI(data) {
@@ -190,30 +243,17 @@
                 document.getElementById('res-beden').innerText = data.beden || "-";
                 document.getElementById('res-kalip').innerText = data.kalip || "-";
                 document.getElementById('res-aciklama').innerText = data.aciklama || "-";
-                document.getElementById('res-fiyat').innerText = (data.satis_fiyati || "-") + " TL";
+                document.getElementById('res-fiyat').innerText = (data.satis_fiyati || "0") + " TL";
             },
 
             async sendData() {
                 const btn = document.getElementById('final-send-btn');
-                btn.disabled = true; btn.innerText = "Yükleniyor...";
-                
-                const payload = { 
-                    ...this.state.currentProductData, 
-                    gorsel_data: this.state.photos[0]?.processed, 
-                    islem_tarihi: new Date().toISOString() 
-                };
-
+                btn.disabled = true; btn.innerText = "YÜKLENİYOR...";
+                const payload = { ...this.state.currentProductData, gorsel_data: this.state.photos[0]?.processed, islem_tarihi: new Date().toISOString() };
                 try {
-                    await fetch(this.config.KAYIT_URL, { 
-                        method: "POST", 
-                        headers: { "Content-Type": "application/json" }, 
-                        body: JSON.stringify(payload) 
-                    });
-                    this.showSuccess();
-                    this.resetUI();
-                } catch (e) { this.showError("Kayıt hatası!"); } finally {
-                    btn.disabled = false; btn.innerText = "Onayla";
-                }
+                    await fetch(this.config.KAYIT_URL, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload) });
+                    this.showSuccess(); this.resetUI();
+                } catch (e) { alert("Hata!"); } finally { btn.disabled = false; btn.innerText = "ONAYLA VE KAYDET"; }
             },
 
             takePhoto() {
@@ -226,12 +266,15 @@
                 document.getElementById('gallery-wrapper').classList.remove('hidden');
             },
 
+            toggleWordPool() {
+                this.state.wordPoolOpen = !this.state.wordPoolOpen;
+                document.getElementById('word-pool').style.transform = this.state.wordPoolOpen ? 'translateY(0)' : 'translateY(100%)';
+            },
+
             resetUI() {
                 document.getElementById('success-modal').classList.add('hidden');
                 document.getElementById('gallery-wrapper').classList.add('hidden');
-                document.getElementById('live-transcript').innerText = "Sıradaki ürünü anlatabilirsiniz...";
-                this.state.photos = [];
-                this.state.currentProductData = null;
+                this.state.photos = []; this.state.currentProductData = null;
             },
 
             toggleLoading(s) { document.getElementById('loading-overlay').classList.toggle('hidden', !s); },
@@ -240,8 +283,7 @@
                 const t = document.getElementById('success-toast');
                 t.classList.remove('hidden');
                 setTimeout(() => t.classList.add('hidden'), 2000);
-            },
-            showError(m) { alert(m); }
+            }
         };
     </script>
 </body>
