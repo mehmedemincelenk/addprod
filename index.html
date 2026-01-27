@@ -242,11 +242,13 @@
             }
         }
 
+        // --- FAZ 1: ANALİZ FONKSİYONU (DEDEKTİF GÜNCELLEMESİ) ---
         async function processAudioChain(audioBlob) {
             if (audioBlob.size === 0) return;
 
-            // 🧹 Her işlemde tertemiz bir başlangıç yapıyoruz
+            // 🧹 HAFIZA TEMİZLİĞİ: Yeni işlem başlamadan önce eski veriyi çöpe atıyoruz
             currentProductData = null; 
+            console.log("🚀 Faz 1 başlıyor! Gidilen adres:", ANALIZ_WEBHOOK_URL);
 
             const overlay = document.getElementById('loading-overlay');
             overlay.classList.remove('hidden');
@@ -288,7 +290,7 @@
             } catch (e) {
                 overlay.classList.add('hidden');
                 console.error("Detaylı Hata:", e);
-                showError(e.message);
+                showError("Sistem Meşgul veya Hatalı: " + e.message + " (Make.com senaryonun 'ON' olduğundan emin ol)");
             }
         }
 
