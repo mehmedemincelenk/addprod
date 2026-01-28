@@ -41,6 +41,7 @@
                 <div class="flex items-center gap-2 text-zinc-400 text-[10px]"><i class="ph ph-circle-fill text-[4px]"></i><span>Kategori</span></div>
                 <div class="flex items-center gap-2 text-zinc-400 text-[10px]"><i class="ph ph-circle-fill text-[4px]"></i><span>Fiyat</span></div>
                 <div class="flex items-center gap-2 text-zinc-400 text-[10px]"><i class="ph ph-circle-fill text-[4px]"></i><span>Stok Adedi</span></div>
+                <div class="flex items-center gap-2 text-zinc-400 text-[10px]"><i class="ph ph-circle-fill text-[4px] text-blue-500"></i><span>Beden</span></div>
             </div>
         </div>
 
@@ -85,8 +86,12 @@
             <div class="flex-1 overflow-y-auto space-y-3 custom-scrollbar mb-6 pr-1">
                 <div class="grid grid-cols-2 gap-2">
                     <div class="bg-white/5 p-3 rounded-xl border border-white/5">
-                        <p class="text-[8px] text-zinc-500 uppercase font-bold mb-1">Renk / Beden</p>
-                        <p class="text-[11px] font-medium text-zinc-300"><span id="res-renk">-</span> / <span id="res-beden">-</span></p>
+                        <p class="text-[8px] text-zinc-500 uppercase font-bold mb-1">Renk / Beden / Kalıp</p>
+                        <p class="text-[10px] font-medium text-zinc-300 truncate">
+                            <span id="res-renk">-</span> / 
+                            <span id="res-beden" class="text-white">-</span> / 
+                            <span id="res-kalip">-</span>
+                        </p>
                     </div>
                     <div class="bg-white/5 p-3 rounded-xl border border-white/5 text-center">
                         <p class="text-[8px] text-zinc-500 uppercase font-bold mb-1">Stok</p>
@@ -194,12 +199,18 @@
 
             updateResultUI(data) {
                 const btn = document.getElementById('final-send-btn');
-                const isMissing = !data.urun_basligi || !data.satis_fiyati || !data.kategori || !data.stok;
+                
+                // GÜNCELLENDİ: Beden de zorunlu alanlara eklendi
+                const isMissing = !data.urun_basligi || !data.satis_fiyati || !data.kategori || !data.stok || !data.beden;
 
                 document.getElementById('res-baslik').innerText = data.urun_basligi || "İSİM EKSİK";
                 document.getElementById('res-kategori-tag').innerText = data.kategori || "KATEGORİ EKSİK";
+                
                 document.getElementById('res-renk').innerText = data.renk || "-";
                 document.getElementById('res-beden').innerText = data.beden || "-";
+                // GÜNCELLENDİ: Kalıp verisi UI'a bağlandı
+                document.getElementById('res-kalip').innerText = data.kalip || "-";
+                
                 document.getElementById('res-stok').innerText = data.stok || "EKSİK";
                 document.getElementById('res-aciklama').innerText = data.aciklama || "-";
                 document.getElementById('res-fiyat').innerText = data.satis_fiyati ? data.satis_fiyati + " TL" : "FİYAT EKSİK";
