@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Ürün Sistemi</title>
+    <title>Pazaryeri Giriş Paneli</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -11,118 +11,142 @@
         body { font-family: 'Inter', sans-serif; background-color: #09090b; color: #fafafa; -webkit-tap-highlight-color: transparent; overflow: hidden; touch-action: none; }
         .safe-pb { padding-bottom: env(safe-area-inset-bottom); }
         .safe-pt { padding-top: env(safe-area-inset-top); }
-        .glass { background: rgba(24, 24, 27, 0.8); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.05); }
+        .glass { background: rgba(24, 24, 27, 0.85); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid rgba(255, 255, 255, 0.08); }
         .recording-pulse { animation: pulse-red 2s infinite cubic-bezier(0.4, 0, 0.6, 1); }
         
-        /* Input Reset & Styling */
+        /* Input Styling */
         input, textarea { background: transparent; border: none; outline: none; color: white; width: 100%; font-family: inherit; }
         input::placeholder, textarea::placeholder { color: #52525b; }
-        .editable-field { transition: all 0.2s; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05); }
-        .editable-field:focus-within { background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.2); }
         
+        .editable-field { transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05); }
+        .editable-field:focus-within { background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.2); box-shadow: 0 0 0 1px rgba(255,255,255,0.1); }
+        
+        /* Scrollbar */
+        .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #3f3f46; border-radius: 4px; }
+
         @keyframes pulse-red { 0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); } 70% { box-shadow: 0 0 0 15px rgba(239, 68, 68, 0); } 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); } }
     </style>
 </head>
 <body class="flex flex-col h-[100dvh] w-full relative">
 
     <div id="start-overlay" class="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-[#09090b] p-8 text-center">
-        <h3 class="text-xl font-medium mb-8">Ürün Giriş Sistemi</h3>
-        <button onclick="App.init()" class="w-full max-w-[200px] py-4 bg-zinc-100 text-black rounded-xl font-medium text-sm active:scale-95 transition-all">Sistemi Başlat</button>
+        <div class="w-16 h-16 bg-zinc-800 rounded-2xl flex items-center justify-center mb-6 border border-white/10">
+            <i class="ph ph-cube text-3xl text-zinc-400"></i>
+        </div>
+        <h3 class="text-xl font-semibold mb-2 text-white">Pazaryeri Giriş Sistemi</h3>
+        <p class="text-xs text-zinc-500 mb-8 max-w-[200px]">Tedarikçi bazlı ürün girişi ve otomatik SKU oluşturucu.</p>
+        <button onclick="App.init()" class="w-full max-w-[200px] py-4 bg-white text-black rounded-xl font-bold text-xs tracking-wider uppercase active:scale-95 transition-all shadow-[0_0_20px_rgba(255,255,255,0.1)]">Sistemi Başlat</button>
     </div>
 
     <header class="absolute top-0 left-0 right-0 z-30 safe-pt p-4 flex justify-between items-center pointer-events-none">
-        <div class="glass px-3 py-1 rounded-md pointer-events-auto">
-            <span class="text-[10px] font-medium text-zinc-400 uppercase tracking-widest">Veri Giriş Hattı</span>
+        <div class="glass px-3 py-1.5 rounded-lg pointer-events-auto flex items-center gap-2">
+            <div class="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></div>
+            <span class="text-[10px] font-bold text-zinc-300 uppercase tracking-widest">Merchant Panel</span>
         </div>
-        <button onclick="App.switchCamera()" class="pointer-events-auto w-10 h-10 rounded-full glass flex items-center justify-center">
+        <button onclick="App.switchCamera()" class="pointer-events-auto w-10 h-10 rounded-full glass flex items-center justify-center active:bg-white/10 transition-colors">
             <i class="ph ph-arrows-clockwise text-lg"></i>
         </button>
     </header>
 
     <div class="flex-1 relative flex flex-col justify-center items-center overflow-hidden bg-black">
-        <video id="camera-feed" autoplay playsinline muted class="w-full h-full object-cover opacity-90"></video>
+        <video id="camera-feed" autoplay playsinline muted class="w-full h-full object-cover opacity-80"></video>
         
-        <div class="absolute left-4 top-20 flex flex-col gap-1.5 pointer-events-none">
-            <div class="glass p-3 rounded-xl border border-white/5 flex flex-col gap-2">
-                <p class="text-[9px] font-bold text-zinc-500 uppercase mb-1">Zorunlu Alanlar</p>
-                <div class="flex items-center gap-2 text-zinc-400 text-[10px]"><i class="ph ph-asterisk text-[8px] text-red-500"></i><span>Fiyat</span></div>
-                <div class="flex items-center gap-2 text-zinc-400 text-[10px]"><i class="ph ph-asterisk text-[8px] text-red-500"></i><span>Stok</span></div>
-                <div class="flex items-center gap-2 text-zinc-400 text-[10px]"><i class="ph ph-asterisk text-[8px] text-red-500"></i><span>Beden</span></div>
-                <div class="flex items-center gap-2 text-zinc-400 text-[10px]"><i class="ph ph-asterisk text-[8px] text-red-500"></i><span>Kalıp</span></div>
+        <div class="absolute left-4 top-24 flex flex-col gap-1.5 pointer-events-none">
+            <div class="glass p-3 rounded-xl border border-white/5 flex flex-col gap-2 shadow-2xl">
+                <p class="text-[9px] font-bold text-zinc-500 uppercase mb-1 tracking-wider">Zorunlu Veriler</p>
+                <div class="flex items-center gap-2 text-zinc-300 text-[10px]"><i class="ph ph-storefront text-yellow-500"></i><span class="font-medium text-yellow-500">Tedarikçi Firma</span></div>
+                <div class="flex items-center gap-2 text-zinc-400 text-[10px]"><i class="ph ph-asterisk text-[8px] text-red-500"></i><span>Fiyat & Stok</span></div>
+                <div class="flex items-center gap-2 text-zinc-400 text-[10px]"><i class="ph ph-asterisk text-[8px] text-red-500"></i><span>Beden & Kalıp</span></div>
             </div>
         </div>
 
-        <div class="absolute bottom-6 left-6 right-6 flex justify-between items-center">
+        <div class="absolute bottom-8 left-6 right-6 flex justify-between items-center">
             <div id="gallery-wrapper" class="hidden glass p-1 rounded-lg">
                 <div id="gallery-strip" class="w-10 h-14 rounded overflow-hidden"></div>
             </div>
-            <button onclick="App.takePhoto()" class="w-14 h-14 rounded-full border-2 border-white/40 bg-white/10 flex items-center justify-center active:scale-90 transition-all">
-                <div class="w-10 h-10 bg-white rounded-full"></div>
+            <button onclick="App.takePhoto()" class="w-16 h-16 rounded-full border-2 border-white/30 bg-white/10 backdrop-blur-sm flex items-center justify-center active:scale-90 transition-all shadow-lg">
+                <div class="w-12 h-12 bg-white rounded-full shadow-inner"></div>
             </button>
         </div>
     </div>
 
-    <div class="bg-zinc-950 pt-4 px-6 pb-8 safe-pb border-t border-white/5">
+    <div class="bg-[#09090b] pt-4 px-6 pb-8 safe-pb border-t border-white/10">
         <div class="flex items-center gap-5">
-            <button id="record-btn" onclick="App.toggleRecording()" class="shrink-0 w-16 h-16 bg-red-600 rounded-2xl flex items-center justify-center active:scale-95 transition-all relative">
-                <i id="mic-icon" class="ph ph-microphone text-2xl"></i>
+            <button id="record-btn" onclick="App.toggleRecording()" class="shrink-0 w-16 h-16 bg-red-600 rounded-2xl flex items-center justify-center active:scale-95 transition-all relative shadow-[0_0_30px_rgba(220,38,38,0.3)]">
+                <i id="mic-icon" class="ph ph-microphone text-2xl text-white"></i>
             </button>
             <div class="flex-1">
-                <div class="flex justify-between items-center mb-1">
-                    <span id="recorder-prompt" class="text-[10px] font-bold text-zinc-500 uppercase tracking-tighter">Sesli Giriş</span>
-                    <div id="recording-indicator" class="hidden flex items-center gap-1">
-                        <span class="w-1 h-1 bg-red-500 rounded-full animate-pulse"></span>
-                        <span class="text-[9px] font-bold text-red-500 uppercase">Dinleniyor</span>
+                <div class="flex justify-between items-center mb-1.5">
+                    <span id="recorder-prompt" class="text-[10px] font-bold text-zinc-500 uppercase tracking-tighter">Sesli Asistan</span>
+                    <div id="recording-indicator" class="hidden flex items-center gap-1.5 bg-red-500/10 px-2 py-0.5 rounded-md border border-red-500/20">
+                        <span class="w-1.5 h-1.5 bg-red-500 rounded-full animate-pulse"></span>
+                        <span class="text-[9px] font-bold text-red-500 uppercase tracking-wide">Dinleniyor</span>
                     </div>
                 </div>
-                <p id="live-transcript" class="text-xs text-zinc-400 italic line-clamp-2">Ürün bilgilerini söyleyin...</p>
+                <p id="live-transcript" class="text-xs text-zinc-400 font-medium italic line-clamp-2 leading-relaxed">Ürün bilgilerini sesli girin (Örn: Mavi Kazak, L Beden...)</p>
             </div>
         </div>
     </div>
 
-    <div id="success-modal" class="fixed inset-0 z-50 hidden flex items-end sm:items-center justify-center p-4 bg-black/90 backdrop-blur-md">
-        <div class="bg-zinc-900 border border-white/10 w-full max-w-sm rounded-3xl p-6 shadow-2xl flex flex-col max-h-[90vh]">
+    <div id="success-modal" class="fixed inset-0 z-50 hidden flex items-end sm:items-center justify-center p-4 bg-black/90 backdrop-blur-xl">
+        <div class="bg-[#121214] border border-white/10 w-full max-w-sm rounded-[32px] p-6 shadow-2xl flex flex-col max-h-[90vh] relative overflow-hidden">
             
-            <div class="mb-4 space-y-2">
+            <div class="absolute top-0 left-1/2 -translate-x-1/2 w-32 h-1 bg-white/20 rounded-full mt-3 sm:hidden"></div>
+
+            <div class="mb-4">
+                <div class="flex items-center justify-between mb-1.5">
+                    <label class="text-[9px] font-bold text-yellow-500 uppercase tracking-wider flex items-center gap-1">
+                        <i class="ph ph-crown-simple text-xs"></i> Tedarikçi Firma
+                    </label>
+                    <span class="text-[8px] text-zinc-600 uppercase font-bold bg-zinc-900 px-1.5 py-0.5 rounded border border-zinc-800">Zorunlu</span>
+                </div>
+                <div class="bg-yellow-500/5 border border-yellow-500/20 rounded-xl px-3 py-2.5 flex items-center gap-3 focus-within:bg-yellow-500/10 focus-within:border-yellow-500/40 transition-colors">
+                    <i class="ph ph-storefront text-lg text-yellow-500"></i>
+                    <input type="text" id="inp-isletme" oninput="App.validateForm()" class="text-xs font-bold text-yellow-100 placeholder-yellow-500/30 uppercase tracking-wider" placeholder="FİRMA ADI GİRİNİZ">
+                </div>
+            </div>
+
+            <div class="mb-5 space-y-2">
                  <div class="flex gap-2">
-                    <input type="text" id="inp-kategori" class="editable-field rounded-lg px-2 py-1 text-[10px] font-bold text-zinc-300 uppercase w-1/3 text-center" placeholder="KATEGORİ">
+                    <input type="text" id="inp-kategori" class="editable-field rounded-lg px-2 py-1 text-[10px] font-bold text-zinc-400 uppercase w-1/3 text-center tracking-wide" placeholder="KATEGORİ">
                     <div class="flex-1"></div>
                 </div>
-                <input type="text" id="inp-baslik" class="editable-field rounded-lg px-2 py-1.5 text-lg font-semibold text-white w-full" placeholder="Ürün Başlığı Giriniz">
+                <input type="text" id="inp-baslik" class="editable-field rounded-lg px-2 py-1.5 text-lg font-semibold text-white w-full placeholder-zinc-600" placeholder="Ürün Başlığı">
             </div>
             
             <div class="flex-1 overflow-y-auto space-y-3 custom-scrollbar mb-6 pr-1">
-                
                 <div class="grid grid-cols-2 gap-2">
-                    <div class="bg-white/5 p-3 rounded-xl border border-white/5 space-y-2">
+                    <div class="bg-white/5 p-3 rounded-2xl border border-white/5 space-y-3">
                         <div>
                             <p class="text-[8px] text-zinc-500 uppercase font-bold mb-1">Beden *</p>
-                            <input type="text" id="inp-beden" oninput="App.validateForm()" class="editable-field rounded px-1.5 py-1 text-sm font-medium text-white text-center" placeholder="Örn: M">
+                            <input type="text" id="inp-beden" oninput="App.validateForm()" class="editable-field rounded-md px-1.5 py-1 text-sm font-medium text-white text-center" placeholder="Örn: M">
                         </div>
                          <div>
                             <p class="text-[8px] text-zinc-500 uppercase font-bold mb-1">Kalıp *</p>
-                            <input type="text" id="inp-kalip" oninput="App.validateForm()" class="editable-field rounded px-1.5 py-1 text-xs text-zinc-300 text-center" placeholder="Örn: Slim Fit">
+                            <input type="text" id="inp-kalip" oninput="App.validateForm()" class="editable-field rounded-md px-1.5 py-1 text-xs text-zinc-300 text-center" placeholder="Örn: Regular">
                         </div>
                     </div>
 
-                    <div class="bg-white/5 p-3 rounded-xl border border-white/5 space-y-2">
+                    <div class="bg-white/5 p-3 rounded-2xl border border-white/5 space-y-3">
                         <div>
-                            <p class="text-[8px] text-zinc-500 uppercase font-bold mb-1">Stok Adedi *</p>
-                            <input type="number" id="inp-stok" oninput="App.validateForm()" class="editable-field rounded px-1.5 py-1 text-sm font-bold text-blue-400 text-center" placeholder="0">
+                            <p class="text-[8px] text-zinc-500 uppercase font-bold mb-1">Stok *</p>
+                            <input type="number" id="inp-stok" oninput="App.validateForm()" class="editable-field rounded-md px-1.5 py-1 text-sm font-bold text-blue-400 text-center" placeholder="0">
                         </div>
                          <div>
                             <p class="text-[8px] text-zinc-500 uppercase font-bold mb-1">Renk</p>
-                            <input type="text" id="inp-renk" class="editable-field rounded px-1.5 py-1 text-xs text-zinc-300 text-center" placeholder="Belirsiz">
+                            <input type="text" id="inp-renk" class="editable-field rounded-md px-1.5 py-1 text-xs text-zinc-300 text-center" placeholder="Belirsiz">
                         </div>
                     </div>
                 </div>
 
                 <div class="bg-black/20 p-3 rounded-2xl border border-white/5">
-                    <p class="text-[9px] text-zinc-500 uppercase font-bold mb-1">Ürün Açıklaması</p>
-                    <textarea id="inp-aciklama" rows="3" class="text-[11px] text-zinc-300 leading-relaxed italic bg-transparent resize-none" placeholder="Açıklama metni buraya..."></textarea>
+                    <p class="text-[9px] text-zinc-500 uppercase font-bold mb-1.5">Ürün Açıklaması</p>
+                    <textarea id="inp-aciklama" rows="3" class="text-[11px] text-zinc-300 leading-relaxed italic bg-transparent resize-none placeholder-zinc-700" placeholder="Açıklama metni buraya..."></textarea>
                 </div>
 
-                <div class="flex justify-between items-center bg-zinc-800/50 p-4 rounded-xl border border-white/5">
+                <div class="flex justify-between items-center bg-zinc-800/50 p-4 rounded-2xl border border-white/5">
                     <span class="text-[10px] font-bold text-zinc-400 uppercase">Satış Fiyatı *</span>
                     <div class="flex items-center gap-1">
                         <input type="number" id="inp-fiyat" oninput="App.validateForm()" class="text-right text-xl font-bold text-white w-24 bg-transparent placeholder-zinc-600" placeholder="0">
@@ -132,20 +156,25 @@
             </div>
 
             <div class="grid grid-cols-2 gap-3 shrink-0">
-                <button onclick="App.resetUI()" class="py-4 rounded-xl bg-zinc-800 text-zinc-400 font-bold text-[10px] uppercase">İptal</button>
-                <button onclick="App.sendData()" id="final-send-btn" disabled class="py-4 rounded-xl bg-zinc-800 text-zinc-500 font-bold text-[10px] uppercase shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed">Eksik Veri</button>
+                <button onclick="App.resetUI()" class="py-4 rounded-xl bg-zinc-800 text-zinc-400 font-bold text-[10px] uppercase tracking-wider hover:bg-zinc-700 transition-colors">İptal</button>
+                <button onclick="App.sendData()" id="final-send-btn" disabled class="py-4 rounded-xl bg-zinc-800 text-zinc-500 font-bold text-[10px] uppercase shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed tracking-wider">Firma Eksik</button>
             </div>
         </div>
     </div>
 
-    <div id="loading-overlay" class="fixed inset-0 bg-black/95 z-[60] hidden flex flex-col items-center justify-center text-center p-12">
-        <div class="w-10 h-10 border-2 border-zinc-500 border-t-white rounded-full animate-spin mb-4"></div>
-        <p class="text-[9px] font-bold tracking-widest text-zinc-500 uppercase">Analiz Ediliyor</p>
+    <div id="loading-overlay" class="fixed inset-0 bg-black/95 z-[60] hidden flex flex-col items-center justify-center text-center p-12 backdrop-blur-sm">
+        <div class="w-12 h-12 border-[3px] border-zinc-600 border-t-white rounded-full animate-spin mb-6"></div>
+        <p class="text-[10px] font-bold tracking-[0.2em] text-zinc-400 uppercase animate-pulse">Veri İşleniyor</p>
     </div>
 
-    <div id="success-toast" class="fixed top-6 inset-x-6 bg-white text-black p-4 rounded-xl z-[80] hidden flex items-center gap-3 shadow-2xl">
-        <i class="ph ph-check text-lg"></i>
-        <span class="text-[10px] font-bold uppercase tracking-tight">Ürün Kaydedildi</span>
+    <div id="success-toast" class="fixed top-6 inset-x-6 bg-white text-black p-4 rounded-xl z-[80] hidden flex items-center gap-3 shadow-2xl border border-zinc-200 transform transition-all translate-y-0">
+        <div class="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center shrink-0">
+            <i class="ph ph-check text-white text-lg font-bold"></i>
+        </div>
+        <div>
+            <p class="text-[11px] font-black uppercase tracking-tight mb-0.5">Başarılı</p>
+            <p class="text-[10px] text-zinc-600 font-medium">Ürün pazaryerine eklendi.</p>
+        </div>
     </div>
 
     <canvas id="capture-canvas" class="hidden"></canvas>
@@ -159,7 +188,6 @@
             state: {
                 photos: [], stream: null, facingMode: "environment", 
                 mediaRecorder: null, audioChunks: [], isRecording: false, 
-                // Artık veriyi direkt DOM'dan okuyacağımız için burası geçici buffer
                 tempData: null
             },
 
@@ -219,8 +247,41 @@
                 } catch (e) { this.toggleLoading(false); alert("Hata oluştu."); }
             },
 
-            // Verileri Inputlara Doldurur
+            // --- YARDIMCI FONKSİYONLAR (EXPERT MODE) ---
+            
+            // Metin temizleme ve slug yapma
+            slugify(text) {
+                if (!text) return "XXX";
+                const trMap = { 'ç': 'c', 'ğ': 'g', 'ı': 'i', 'i': 'i', 'ö': 'o', 'ş': 's', 'ü': 'u', 'Ç': 'C', 'Ğ': 'G', 'İ': 'I', 'Ö': 'O', 'Ş': 'S', 'Ü': 'U' };
+                let clean = text.replace(/[çğıiöşüÇĞİÖŞÜ]/g, (char) => trMap[char] || char);
+                clean = clean.replace(/[^a-zA-Z0-9]/g, '').toUpperCase();
+                return clean.length > 4 ? clean.substring(0, 4) : clean; 
+            },
+
+            // Pazaryeri SKU Algoritması: TEDARİKÇİ + ÜRÜN + DATA
+            generateMarketplaceSKU() {
+                const isletme = document.getElementById('inp-isletme').value;
+                const kat = document.getElementById('inp-kategori').value;
+                const renk = document.getElementById('inp-renk').value;
+                const beden = document.getElementById('inp-beden').value;
+
+                const sIsletme = this.slugify(isletme);
+                const sKat = this.slugify(kat);
+                const sRenk = this.slugify(renk);
+                let sBeden = beden.toUpperCase().replace(/[^A-Z0-9]/g, '');
+                if(sBeden.length > 3) sBeden = sBeden.substring(0,3);
+
+                const randomCode = Math.floor(1000 + Math.random() * 9000); // 4 haneli sayı
+                
+                // ÖRN: NIKE-TSH-SIY-L-9382
+                return `${sIsletme}-${sKat}-${sRenk}-${sBeden}-${randomCode}`;
+            },
+
             populateInputs(data) {
+                // LOCALSTORAGE: Son girilen tedarikçi adını hatırla (KISS & UX)
+                const savedSupplier = localStorage.getItem('last_supplier_name') || "";
+                document.getElementById('inp-isletme').value = savedSupplier;
+
                 document.getElementById('inp-baslik').value = data.urun_basligi || "";
                 document.getElementById('inp-kategori').value = data.kategori || "";
                 document.getElementById('inp-beden').value = data.beden || "";
@@ -230,12 +291,11 @@
                 document.getElementById('inp-aciklama').value = data.aciklama || "";
                 document.getElementById('inp-fiyat').value = data.satis_fiyati || "";
                 
-                // İlk açılışta validasyon kontrolü yap
                 this.validateForm();
             },
 
-            // Kritik Validasyon Fonksiyonu
             validateForm() {
+                const isletme = document.getElementById('inp-isletme').value.trim();
                 const beden = document.getElementById('inp-beden').value.trim();
                 const kalip = document.getElementById('inp-kalip').value.trim();
                 const stok = document.getElementById('inp-stok').value.trim();
@@ -243,26 +303,35 @@
                 
                 const btn = document.getElementById('final-send-btn');
 
-                // Zorunlu alanlar dolu mu?
-                if (beden && kalip && stok && fiyat) {
+                // Tedarikçi ismi de artık zorunlu
+                if (isletme && beden && kalip && stok && fiyat) {
                     btn.disabled = false;
-                    btn.innerText = "ONAYLA";
+                    btn.innerText = "SİSTEME YÜKLE";
                     btn.classList.remove('bg-zinc-800', 'text-zinc-500');
-                    btn.classList.add('bg-zinc-100', 'text-black', 'active:scale-95');
+                    btn.classList.add('bg-white', 'text-black', 'active:scale-95');
                 } else {
                     btn.disabled = true;
-                    btn.innerText = "EKSİK BİLGİ";
+                    // Kullanıcıya neyin eksik olduğunu söyle
+                    btn.innerText = !isletme ? "FİRMA GİRİNİZ" : "EKSİK VERİ";
                     btn.classList.add('bg-zinc-800', 'text-zinc-500');
-                    btn.classList.remove('bg-zinc-100', 'text-black', 'active:scale-95');
+                    btn.classList.remove('bg-white', 'text-black', 'active:scale-95');
                 }
             },
 
             async sendData() {
                 const btn = document.getElementById('final-send-btn');
-                btn.disabled = true; btn.innerText = "KAYDEDİLİYOR...";
+                const isletmeInput = document.getElementById('inp-isletme').value.trim();
                 
-                // Verileri direkt Inputlardan topla (Kullanıcının düzenlemiş olma ihtimaline karşı)
+                // Tedarikçiyi hafızaya kaydet
+                localStorage.setItem('last_supplier_name', isletmeInput);
+
+                btn.disabled = true; btn.innerText = "GÖNDERİLİYOR...";
+                
+                const smartSKU = this.generateMarketplaceSKU();
+
                 const finalPayload = {
+                    sku: smartSKU,
+                    tedarikci: isletmeInput,
                     urun_basligi: document.getElementById('inp-baslik').value,
                     kategori: document.getElementById('inp-kategori').value,
                     beden: document.getElementById('inp-beden').value,
@@ -281,11 +350,12 @@
                         headers: { "Content-Type": "application/json" }, 
                         body: JSON.stringify(finalPayload) 
                     });
+                    
                     this.showSuccess();
                     this.resetUI();
                 } catch (e) { 
                     alert("Kayıt başarısız."); 
-                    this.validateForm(); // Butonu eski haline getir
+                    this.validateForm(); 
                 }
             },
 
@@ -310,7 +380,7 @@
             showSuccess() {
                 const t = document.getElementById('success-toast');
                 t.classList.remove('hidden');
-                setTimeout(() => t.classList.add('hidden'), 2000);
+                setTimeout(() => t.classList.add('hidden'), 2500);
             }
         };
     </script>
