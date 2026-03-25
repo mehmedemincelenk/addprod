@@ -1,0 +1,820 @@
+{
+    "name": "Integration Webhooks, Cloudinary",
+    "flow": [
+        {
+            "id": 1,
+            "module": "gateway:CustomWebHook",
+            "version": 1,
+            "parameters": {
+                "hook": 2389975,
+                "maxResults": 1
+            },
+            "mapper": {},
+            "metadata": {
+                "designer": {
+                    "x": -370,
+                    "y": 232
+                },
+                "restore": {
+                    "parameters": {
+                        "hook": {
+                            "data": {
+                                "editable": "true"
+                            },
+                            "label": "Faz2_Kayıt_Webhook"
+                        }
+                    }
+                },
+                "parameters": [
+                    {
+                        "name": "hook",
+                        "type": "hook:gateway-webhook",
+                        "label": "Webhook",
+                        "required": true
+                    },
+                    {
+                        "name": "maxResults",
+                        "type": "number",
+                        "label": "Maximum number of results"
+                    }
+                ],
+                "interface": [
+                    {
+                        "name": "tedarikci",
+                        "type": "text"
+                    },
+                    {
+                        "name": "marka",
+                        "type": "text"
+                    },
+                    {
+                        "name": "kategori",
+                        "type": "text"
+                    },
+                    {
+                        "name": "cinsiyet",
+                        "type": "text"
+                    },
+                    {
+                        "name": "kalip",
+                        "type": "text"
+                    },
+                    {
+                        "name": "renk",
+                        "type": "text"
+                    },
+                    {
+                        "name": "beden",
+                        "type": "text"
+                    },
+                    {
+                        "name": "urun_basligi",
+                        "type": "text"
+                    },
+                    {
+                        "name": "satis_fiyati",
+                        "type": "text"
+                    },
+                    {
+                        "name": "piyasa_fiyati",
+                        "type": "text"
+                    },
+                    {
+                        "name": "stok",
+                        "type": "text"
+                    },
+                    {
+                        "name": "kusur_detayi",
+                        "type": "text"
+                    },
+                    {
+                        "name": "aciklama",
+                        "type": "text"
+                    },
+                    {
+                        "name": "gorsel_data",
+                        "type": "text"
+                    },
+                    {
+                        "name": "islem_tarihi",
+                        "type": "text"
+                    }
+                ]
+            }
+        },
+        {
+            "id": 9,
+            "module": "imgbb:UploadPhotoV1",
+            "version": 1,
+            "parameters": {
+                "__IMTCONN__": 4859660
+            },
+            "mapper": {
+                "data": "{{get(split(1.gorsel_data; \",\"); 2)}}"
+            },
+            "metadata": {
+                "designer": {
+                    "x": -103,
+                    "y": 224
+                },
+                "restore": {
+                    "parameters": {
+                        "__IMTCONN__": {
+                            "data": {
+                                "scoped": "true",
+                                "connection": "imgbb"
+                            },
+                            "label": "ifaurunyukleimgbb"
+                        }
+                    }
+                },
+                "parameters": [
+                    {
+                        "name": "__IMTCONN__",
+                        "type": "account:imgbb",
+                        "label": "Connection",
+                        "required": true
+                    }
+                ],
+                "expect": [
+                    {
+                        "name": "fileName",
+                        "type": "filename",
+                        "label": "File name"
+                    },
+                    {
+                        "name": "data",
+                        "type": "buffer",
+                        "label": "Data"
+                    }
+                ]
+            }
+        },
+        {
+            "id": 4,
+            "module": "google-sheets:addRow",
+            "version": 2,
+            "parameters": {
+                "__IMTCONN__": 6103693
+            },
+            "mapper": {
+                "mode": "select",
+                "insertUnformatted": false,
+                "valueInputOption": "USER_ENTERED",
+                "insertDataOption": "INSERT_ROWS",
+                "from": "drive",
+                "spreadsheetId": "/1qPs6WKx3Oba3BiOu85bm-HtdKzi6oNNN9a9f2UnsfB8",
+                "sheetId": "all",
+                "includesHeaders": true,
+                "useColumnHeaders": false,
+                "values": {
+                    "2": "{{1.urun_basligi}}",
+                    "3": "{{1.aciklama}}",
+                    "4": "{{1.satis_fiyati}}",
+                    "8": "{{1.sku}}",
+                    "9": "false",
+                    "11": "{{1.kategori}}, TÜM ÜRÜNLER",
+                    "13": "{{9.image.url}}",
+                    "17": "{{1.stok}}",
+                    "18": "PHYSICAL",
+                    "23": "1",
+                    "30": "{{1.tedarikci}}",
+                    "32": "VISIBLE",
+                    "35": "TRUE"
+                }
+            },
+            "metadata": {
+                "designer": {
+                    "x": 165,
+                    "y": 220
+                },
+                "restore": {
+                    "parameters": {
+                        "__IMTCONN__": {
+                            "label": "My Google connection (emnc2k1@gmail.com)",
+                            "data": {
+                                "scoped": "true",
+                                "connection": "google"
+                            }
+                        }
+                    },
+                    "expect": {
+                        "mode": {
+                            "label": "Search by path"
+                        },
+                        "insertUnformatted": {
+                            "mode": "chose"
+                        },
+                        "valueInputOption": {
+                            "mode": "chose",
+                            "label": "User entered"
+                        },
+                        "insertDataOption": {
+                            "mode": "chose",
+                            "label": "Insert rows"
+                        },
+                        "from": {
+                            "label": "My Drive"
+                        },
+                        "spreadsheetId": {
+                            "path": [
+                                "addprod"
+                            ]
+                        },
+                        "sheetId": {
+                            "label": "all"
+                        },
+                        "includesHeaders": {
+                            "label": "Yes"
+                        },
+                        "useColumnHeaders": {
+                            "nested": [
+                                {
+                                    "name": "values",
+                                    "label": "Values in columns",
+                                    "type": "collection",
+                                    "spec": [
+                                        {
+                                            "name": "0",
+                                            "label": "Ürün Grup ID (A)",
+                                            "type": "text"
+                                        },
+                                        {
+                                            "name": "1",
+                                            "label": "Varyant ID (B)",
+                                            "type": "text"
+                                        },
+                                        {
+                                            "name": "2",
+                                            "label": "İsim (C)",
+                                            "type": "text"
+                                        },
+                                        {
+                                            "name": "3",
+                                            "label": "Açıklama (D)",
+                                            "type": "text"
+                                        },
+                                        {
+                                            "name": "4",
+                                            "label": "Satış Fiyatı (E)",
+                                            "type": "text"
+                                        },
+                                        {
+                                            "name": "5",
+                                            "label": "İndirimli Fiyatı (F)",
+                                            "type": "text"
+                                        },
+                                        {
+                                            "name": "6",
+                                            "label": "Alış Fiyatı (G)",
+                                            "type": "text"
+                                        },
+                                        {
+                                            "name": "7",
+                                            "label": "Barkod Listesi (H)",
+                                            "type": "text"
+                                        },
+                                        {
+                                            "name": "8",
+                                            "label": "SKU (I)",
+                                            "type": "text"
+                                        },
+                                        {
+                                            "name": "9",
+                                            "label": "Silindi mi? (J)",
+                                            "type": "text"
+                                        },
+                                        {
+                                            "name": "10",
+                                            "label": "Marka (K)",
+                                            "type": "text"
+                                        },
+                                        {
+                                            "name": "11",
+                                            "label": "Kategoriler (L)",
+                                            "type": "text"
+                                        },
+                                        {
+                                            "name": "12",
+                                            "label": "Etiketler (M)",
+                                            "type": "text"
+                                        },
+                                        {
+                                            "name": "13",
+                                            "label": "Resim URL (N)",
+                                            "type": "text"
+                                        },
+                                        {
+                                            "name": "14",
+                                            "label": "Metadata Başlık (O)",
+                                            "type": "text"
+                                        },
+                                        {
+                                            "name": "15",
+                                            "label": "Metadata Açıklama (P)",
+                                            "type": "text"
+                                        },
+                                        {
+                                            "name": "16",
+                                            "label": "Slug (Q)",
+                                            "type": "text"
+                                        },
+                                        {
+                                            "name": "17",
+                                            "label": "Stok:Ana Depo (R)",
+                                            "type": "text"
+                                        },
+                                        {
+                                            "name": "18",
+                                            "label": "Tip (S)",
+                                            "type": "text"
+                                        },
+                                        {
+                                            "name": "19",
+                                            "label": "Varyant Tip 1 (T)",
+                                            "type": "text"
+                                        },
+                                        {
+                                            "name": "20",
+                                            "label": "Varyant Değer 1 (U)",
+                                            "type": "text"
+                                        },
+                                        {
+                                            "name": "21",
+                                            "label": "Varyant Tip 2 (V)",
+                                            "type": "text"
+                                        },
+                                        {
+                                            "name": "22",
+                                            "label": "Varyant Değer 2 (W)",
+                                            "type": "text"
+                                        },
+                                        {
+                                            "name": "23",
+                                            "label": "Desi (X)",
+                                            "type": "text"
+                                        },
+                                        {
+                                            "name": "24",
+                                            "label": "HS Kod (Y)",
+                                            "type": "text"
+                                        },
+                                        {
+                                            "name": "25",
+                                            "label": "Birim Ürün Miktarı (Z)",
+                                            "type": "text"
+                                        },
+                                        {
+                                            "name": "26",
+                                            "label": "Ürün Birimi (AA)",
+                                            "type": "text"
+                                        },
+                                        {
+                                            "name": "27",
+                                            "label": "Satılan Ürün Miktarı (AB)",
+                                            "type": "text"
+                                        },
+                                        {
+                                            "name": "28",
+                                            "label": "Satılan Ürün Birimi (AC)",
+                                            "type": "text"
+                                        },
+                                        {
+                                            "name": "29",
+                                            "label": "Google Ürün Kategorisi (AD)",
+                                            "type": "text"
+                                        },
+                                        {
+                                            "name": "30",
+                                            "label": "Tedarikçi (AE)",
+                                            "type": "text"
+                                        },
+                                        {
+                                            "name": "31",
+                                            "label": "Stoğu Tükenince Satmaya Devam Et (AF)",
+                                            "type": "text"
+                                        },
+                                        {
+                                            "name": "32",
+                                            "label": "Satış Kanalı:ihracatfazlasi (AG)",
+                                            "type": "text"
+                                        },
+                                        {
+                                            "name": "33",
+                                            "label": "Sepet Başına Minimum Alma Adeti:ihracatfazlasi (AH)",
+                                            "type": "text"
+                                        },
+                                        {
+                                            "name": "34",
+                                            "label": "Sepet Başına Maksimum Alma Adeti:ihracatfazlasi (AI)",
+                                            "type": "text"
+                                        },
+                                        {
+                                            "name": "35",
+                                            "label": "Varyant Aktiflik (AJ)",
+                                            "type": "text"
+                                        }
+                                    ],
+                                    "metadata": [
+                                        [
+                                            [
+                                                "Ürün Grup ID",
+                                                "Varyant ID",
+                                                "İsim",
+                                                "Açıklama",
+                                                "Satış Fiyatı",
+                                                "İndirimli Fiyatı",
+                                                "Alış Fiyatı",
+                                                "Barkod Listesi",
+                                                "SKU",
+                                                "Silindi mi?",
+                                                "Marka",
+                                                "Kategoriler",
+                                                "Etiketler",
+                                                "Resim URL",
+                                                "Metadata Başlık",
+                                                "Metadata Açıklama",
+                                                "Slug",
+                                                "Stok:Ana Depo",
+                                                "Tip",
+                                                "Varyant Tip 1",
+                                                "Varyant Değer 1",
+                                                "Varyant Tip 2",
+                                                "Varyant Değer 2",
+                                                "Desi",
+                                                "HS Kod",
+                                                "Birim Ürün Miktarı",
+                                                "Ürün Birimi",
+                                                "Satılan Ürün Miktarı",
+                                                "Satılan Ürün Birimi",
+                                                "Google Ürün Kategorisi",
+                                                "Tedarikçi",
+                                                "Stoğu Tükenince Satmaya Devam Et",
+                                                "Satış Kanalı:ihracatfazlasi",
+                                                "Sepet Başına Minimum Alma Adeti:ihracatfazlasi",
+                                                "Sepet Başına Maksimum Alma Adeti:ihracatfazlasi",
+                                                "Varyant Aktiflik"
+                                            ]
+                                        ]
+                                    ]
+                                }
+                            ],
+                            "label": "No"
+                        }
+                    }
+                },
+                "parameters": [
+                    {
+                        "name": "__IMTCONN__",
+                        "type": "account:google",
+                        "label": "Connection",
+                        "required": true
+                    }
+                ],
+                "expect": [
+                    {
+                        "name": "mode",
+                        "type": "select",
+                        "label": "Search Method",
+                        "required": true,
+                        "validate": {
+                            "enum": [
+                                "select",
+                                "fromAll",
+                                "map"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "insertUnformatted",
+                        "type": "boolean",
+                        "label": "Unformatted",
+                        "required": true
+                    },
+                    {
+                        "name": "valueInputOption",
+                        "type": "select",
+                        "label": "Value input option",
+                        "validate": {
+                            "enum": [
+                                "USER_ENTERED",
+                                "RAW"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "insertDataOption",
+                        "type": "select",
+                        "label": "Insert data option",
+                        "validate": {
+                            "enum": [
+                                "INSERT_ROWS",
+                                "OVERWRITE"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "from",
+                        "type": "select",
+                        "label": "Drive",
+                        "required": true,
+                        "validate": {
+                            "enum": [
+                                "drive",
+                                "share",
+                                "team"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "spreadsheetId",
+                        "type": "file",
+                        "label": "Spreadsheet Name",
+                        "required": true
+                    },
+                    {
+                        "name": "sheetId",
+                        "type": "select",
+                        "label": "Sheet Name",
+                        "required": true
+                    },
+                    {
+                        "name": "includesHeaders",
+                        "type": "select",
+                        "label": "Table contains headers",
+                        "required": true,
+                        "validate": {
+                            "enum": [
+                                true,
+                                false
+                            ]
+                        }
+                    },
+                    {
+                        "name": "useColumnHeaders",
+                        "type": "select",
+                        "label": "Use column headers as IDs of the columns",
+                        "required": true,
+                        "validate": {
+                            "enum": [
+                                true,
+                                false
+                            ]
+                        }
+                    },
+                    {
+                        "name": "values",
+                        "type": "collection",
+                        "label": "Values in columns",
+                        "metadata": [
+                            [
+                                [
+                                    "Ürün Grup ID",
+                                    "Varyant ID",
+                                    "İsim",
+                                    "Açıklama",
+                                    "Satış Fiyatı",
+                                    "İndirimli Fiyatı",
+                                    "Alış Fiyatı",
+                                    "Barkod Listesi",
+                                    "SKU",
+                                    "Silindi mi?",
+                                    "Marka",
+                                    "Kategoriler",
+                                    "Etiketler",
+                                    "Resim URL",
+                                    "Metadata Başlık",
+                                    "Metadata Açıklama",
+                                    "Slug",
+                                    "Stok:Ana Depo",
+                                    "Tip",
+                                    "Varyant Tip 1",
+                                    "Varyant Değer 1",
+                                    "Varyant Tip 2",
+                                    "Varyant Değer 2",
+                                    "Desi",
+                                    "HS Kod",
+                                    "Birim Ürün Miktarı",
+                                    "Ürün Birimi",
+                                    "Satılan Ürün Miktarı",
+                                    "Satılan Ürün Birimi",
+                                    "Google Ürün Kategorisi",
+                                    "Tedarikçi",
+                                    "Stoğu Tükenince Satmaya Devam Et",
+                                    "Satış Kanalı:ihracatfazlasi",
+                                    "Sepet Başına Minimum Alma Adeti:ihracatfazlasi",
+                                    "Sepet Başına Maksimum Alma Adeti:ihracatfazlasi",
+                                    "Varyant Aktiflik"
+                                ]
+                            ]
+                        ],
+                        "spec": [
+                            {
+                                "name": "0",
+                                "type": "text",
+                                "label": "Ürün Grup ID (A)"
+                            },
+                            {
+                                "name": "1",
+                                "type": "text",
+                                "label": "Varyant ID (B)"
+                            },
+                            {
+                                "name": "2",
+                                "type": "text",
+                                "label": "İsim (C)"
+                            },
+                            {
+                                "name": "3",
+                                "type": "text",
+                                "label": "Açıklama (D)"
+                            },
+                            {
+                                "name": "4",
+                                "type": "text",
+                                "label": "Satış Fiyatı (E)"
+                            },
+                            {
+                                "name": "5",
+                                "type": "text",
+                                "label": "İndirimli Fiyatı (F)"
+                            },
+                            {
+                                "name": "6",
+                                "type": "text",
+                                "label": "Alış Fiyatı (G)"
+                            },
+                            {
+                                "name": "7",
+                                "type": "text",
+                                "label": "Barkod Listesi (H)"
+                            },
+                            {
+                                "name": "8",
+                                "type": "text",
+                                "label": "SKU (I)"
+                            },
+                            {
+                                "name": "9",
+                                "type": "text",
+                                "label": "Silindi mi? (J)"
+                            },
+                            {
+                                "name": "10",
+                                "type": "text",
+                                "label": "Marka (K)"
+                            },
+                            {
+                                "name": "11",
+                                "type": "text",
+                                "label": "Kategoriler (L)"
+                            },
+                            {
+                                "name": "12",
+                                "type": "text",
+                                "label": "Etiketler (M)"
+                            },
+                            {
+                                "name": "13",
+                                "type": "text",
+                                "label": "Resim URL (N)"
+                            },
+                            {
+                                "name": "14",
+                                "type": "text",
+                                "label": "Metadata Başlık (O)"
+                            },
+                            {
+                                "name": "15",
+                                "type": "text",
+                                "label": "Metadata Açıklama (P)"
+                            },
+                            {
+                                "name": "16",
+                                "type": "text",
+                                "label": "Slug (Q)"
+                            },
+                            {
+                                "name": "17",
+                                "type": "text",
+                                "label": "Stok:Ana Depo (R)"
+                            },
+                            {
+                                "name": "18",
+                                "type": "text",
+                                "label": "Tip (S)"
+                            },
+                            {
+                                "name": "19",
+                                "type": "text",
+                                "label": "Varyant Tip 1 (T)"
+                            },
+                            {
+                                "name": "20",
+                                "type": "text",
+                                "label": "Varyant Değer 1 (U)"
+                            },
+                            {
+                                "name": "21",
+                                "type": "text",
+                                "label": "Varyant Tip 2 (V)"
+                            },
+                            {
+                                "name": "22",
+                                "type": "text",
+                                "label": "Varyant Değer 2 (W)"
+                            },
+                            {
+                                "name": "23",
+                                "type": "text",
+                                "label": "Desi (X)"
+                            },
+                            {
+                                "name": "24",
+                                "type": "text",
+                                "label": "HS Kod (Y)"
+                            },
+                            {
+                                "name": "25",
+                                "type": "text",
+                                "label": "Birim Ürün Miktarı (Z)"
+                            },
+                            {
+                                "name": "26",
+                                "type": "text",
+                                "label": "Ürün Birimi (AA)"
+                            },
+                            {
+                                "name": "27",
+                                "type": "text",
+                                "label": "Satılan Ürün Miktarı (AB)"
+                            },
+                            {
+                                "name": "28",
+                                "type": "text",
+                                "label": "Satılan Ürün Birimi (AC)"
+                            },
+                            {
+                                "name": "29",
+                                "type": "text",
+                                "label": "Google Ürün Kategorisi (AD)"
+                            },
+                            {
+                                "name": "30",
+                                "type": "text",
+                                "label": "Tedarikçi (AE)"
+                            },
+                            {
+                                "name": "31",
+                                "type": "text",
+                                "label": "Stoğu Tükenince Satmaya Devam Et (AF)"
+                            },
+                            {
+                                "name": "32",
+                                "type": "text",
+                                "label": "Satış Kanalı:ihracatfazlasi (AG)"
+                            },
+                            {
+                                "name": "33",
+                                "type": "text",
+                                "label": "Sepet Başına Minimum Alma Adeti:ihracatfazlasi (AH)"
+                            },
+                            {
+                                "name": "34",
+                                "type": "text",
+                                "label": "Sepet Başına Maksimum Alma Adeti:ihracatfazlasi (AI)"
+                            },
+                            {
+                                "name": "35",
+                                "type": "text",
+                                "label": "Varyant Aktiflik (AJ)"
+                            }
+                        ]
+                    }
+                ],
+                "advanced": true
+            }
+        }
+    ],
+    "metadata": {
+        "instant": true,
+        "version": 1,
+        "scenario": {
+            "roundtrips": 1,
+            "maxErrors": 3,
+            "autoCommit": true,
+            "autoCommitTriggerLast": true,
+            "sequential": false,
+            "slots": null,
+            "confidential": false,
+            "dataloss": false,
+            "dlq": false,
+            "freshVariables": false
+        },
+        "designer": {
+            "orphans": []
+        },
+        "zone": "eu1.make.com",
+        "notes": []
+    }
+}
