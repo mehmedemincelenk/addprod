@@ -1,7 +1,6 @@
 # 🎙️ Voice-to-Sheets E-Commerce Product Loader
-<img width="1920" height="1080" alt="addprod_autom" src="https://github.com/user-attachments/assets/1c43fe67-7779-4a5b-a21b-de98add28ad0" />
-
 An AI-powered pipeline that converts unstructured voice descriptions into formatted database entries.
+<img width="1920" height="1080" alt="addprod_autom" src="https://github.com/user-attachments/assets/1c43fe67-7779-4a5b-a21b-de98add28ad0" />
 
 ## 🚀 Problem & Solution
 
